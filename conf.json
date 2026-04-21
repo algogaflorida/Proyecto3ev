@@ -1,0 +1,6 @@
+{
+    "host": "db",
+    "userName":"root",
+    "pasword":"test",
+    "db":"Series"
+}
