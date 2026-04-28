@@ -17,6 +17,6 @@ class Usuario {
         return $this->email; 
     }
     public function getPassword() { 
-        return $this->password; 
+        return $this->pwd; 
     }
 }
