@@ -1,20 +1,44 @@
 <?php
 require_once "autoload.php";
+
+
 $gestor = new GestorPDO();
 $controller = new Controller($gestor);
+$usuarioController = new UsuarioController($gestor);
+
 $accion = $_GET['accion'] ?? 'listar';
 
 switch ($accion) { 
-    case 'listar':
-        $controller->listar();
+    case 'login':
+        $usuarioController->login();
         break;
-    case 'editar':
-        $controller->editar();
+    case 'registro':
+        $usuarioController->registro();
         break;
+    case 'logout':
+        $usuarioController->logout();
+        break;
+    case 'crear':
     case 'eliminar':
-        $controller->eliminar();
+    case 'editar':
+        if (!isset($_SESSION['usuarioId'])){
+            header('Location: index.php?accion=login');
+            break;
+        }
+        if ($accion === 'crear'){
+            $controller->crear();
+            break;
+        }
+        if ($accion === 'eliminar'){
+            $controller->eliminar();
+            break;
+        }
+        if ($accion === 'editar'){
+            $controller->editar();
+            break;
+        }
         break;
-    case 'agregar':
-        $controller->agregar();
+    default:
+        $controller->listar();
         break;
 }
