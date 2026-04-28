@@ -1,55 +1,44 @@
 <?php
-class Serie {
-    private $id_serie;
-    private $estado;
-    private $fecha_estreno;
-    private $puntuacion_media;
-    private $sinopsis;
-    private $titulo;
+abstract class Serie {
+    protected $id;
+    protected $estreno;
+    protected $titulo;
+    protected $genero;
 
-    public function __construct($est, $fecha, $punt, $sino, $tit, $id = 0){
-        $this->estado = $est;
-        $this->fecha_estreno = $fecha;
-        $this->puntuacion_media = $punt;
-        $this->sinopsis = $sino;
+    public function __construct($est, $tipo, $tit, $gen, $id = 0){
+        $this->estreno = $est;
         $this->titulo = $tit;
-        $this->id_serie = $id;
+        $this->genero = $gen;
+        $this->id = $id;
     }
 
-    public function setEstado($est){
-        $this->estado = $est;
+    abstract public function getTipoClase();
+    public function setEstreno($est){
+        $this->estreno = $est;
     }
 
-    public function setFechaEstreno($fecha){
-        $this->fecha_estreno = $fecha;
+    public function setTipoClase($tc){
+        $this->tipo_clase = $tc;
     }
 
-    public function setPuntuacion($punt){
-        $this->puntuacion_media = $punt;
-    }
-
-    public function setSinopsis($sino){
-        $this->sinopsis = $sino;
+    public function setGenero($gen){
+        $this->genero = $gen;
     }
 
     public function setTitulo($tit){
         $this->titulo = $tit;
     }
-
-    public function getEstado(){
-        return $this->estado;
-    }
     
-    public function getFechaEstreno(){
-        return $this->fecha_estreno;
+    public function getEstreno(){
+        return $this->estreno;
     }
 
-    public function getPuntuacion(){
-        return $this->puntuacion_media;
+    public function getTipoClase(){
+        return $this->tipo_clase;
     }
 
-    public function getSinopsis(){
-        return $this->sinopsis;
+    public function getGenero(){
+        return $this->genero;
     }
 
     public function getTitulo(){
@@ -57,6 +46,6 @@ class Serie {
     }
 
     public function getId(){
-        return $this->id_serie;
+        return $this->id;
     }
 }
