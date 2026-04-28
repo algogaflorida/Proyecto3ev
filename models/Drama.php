@@ -1,10 +1,10 @@
 <?php
 class Drama extends Serie {
-    private $calificacionEdad;
+    private $calificacion_edad;
 
     public function __construct($est, $tit, $gen, $calificacion, $id = 0){
         parent::__construct($est, $tit, $gen, $id);
-        $this->calificacionEdad = $calificacion;
+        $this->calificacion_edad = $calificacion;
     }
 
     public function getTipoClase(){
@@ -12,10 +12,10 @@ class Drama extends Serie {
     };
 
     public function setCalificacion($calificacion){
-        $this->calificacionEdad = $calificacion;
+        $this->calificacion_edad = $calificacion;
     }
 
     public function getCalificacion(){
-        return $this->calificacionEdad;
+        return $this->calificacion_edad;
     }
 }
