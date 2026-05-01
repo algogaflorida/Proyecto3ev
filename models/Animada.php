@@ -9,13 +9,13 @@ class Animada extends Serie {
 
     public function getTipoClase(){
         return 'Animada';
-    };
-
-    public function setEstilo($estilo){
-        $this->estilo_animacion = $estilo;
     }
 
-    public function getEstilo(){
-        return $this->estilo_animacion;
+    public function setEstilo($estilo){ 
+        $this->estilo_animacion = $estilo; 
+    }
+    
+    public function getEstilo(){ 
+        return $this->estilo_animacion; 
     }
 }

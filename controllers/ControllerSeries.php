@@ -17,7 +17,7 @@ class ControllerSeries {
             exit;
         }
         
-        $id = $_GET['id'] ?? null;
+        $id = $_POST['id'] ?? $_GET['id'] ?? null;
         
         $serie = $this->gestor->buscar($id);
         if (!$serie) {
@@ -53,14 +53,12 @@ class ControllerSeries {
             $titulo = $_POST['titulo'];
             $genero = $_POST['genero'];
             $tipo = $_POST['tipo_clase'];
+            $distintivo = $_POST['distintivo'] ?? '';
             if ($tipo == "Drama"){
-                $distintivo = $_POST['calificacion_edad'];
                 $nuevaSerie = new Drama($estreno, $titulo, $genero, $distintivo);
             } elseif ($tipo == "Documental") {
-                $distintivo = $_POST['narrador'];
                 $nuevaSerie = new Documental($estreno, $titulo, $genero, $distintivo);
             } else {
-                $distintivo = $_POST['estilo'];
                 $nuevaSerie = new Animada($estreno, $titulo, $genero, $distintivo);
             }
             $this->gestor->crear($nuevaSerie);
@@ -85,4 +83,21 @@ class ControllerSeries {
         header('Location: index.php?accion=listar');
         exit;
     }
+
+    public function votar(){
+    if (!isset($_SESSION['usuario_id'])) {
+        header("Location: index.php?accion=login");
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'];
+        $nota = $_POST['nota'];
+
+        $this->gestor->actualizarNota($id, $nota);
+
+        header("Location: index.php?accion=listar");
+        exit;
+    }
+}
 }

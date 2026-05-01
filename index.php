@@ -1,44 +1,38 @@
 <?php
+session_start();
+if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['recordar'])) {
+    $_SESSION['usuario_id'] = $_COOKIE['recordar'];
+}
 require_once "autoload.php";
 
 
 $gestor = new GestorPDO();
-$controller = new Controller($gestor);
-$usuarioController = new UsuarioController($gestor);
+$controllerSeries = new ControllerSeries($gestor);
+$usuarioController = new ControllerUsuario($gestor);
 
 $accion = $_GET['accion'] ?? 'listar';
 
 switch ($accion) { 
     case 'login':
-        $usuarioController->login();
+        $usuarioController->iniciarSesion();
         break;
     case 'registro':
         $usuarioController->registro();
         break;
     case 'logout':
-        $usuarioController->logout();
+        $usuarioController->logOut();
         break;
     case 'crear':
     case 'eliminar':
     case 'editar':
-        if (!isset($_SESSION['usuarioId'])){
+    case 'votar':
+        if (!isset($_SESSION['usuario_id'])){
             header('Location: index.php?accion=login');
-            break;
+            exit;
         }
-        if ($accion === 'crear'){
-            $controller->crear();
-            break;
-        }
-        if ($accion === 'eliminar'){
-            $controller->eliminar();
-            break;
-        }
-        if ($accion === 'editar'){
-            $controller->editar();
-            break;
-        }
+        $controllerSeries->$accion();
         break;
     default:
-        $controller->listar();
+        $controllerSeries->listar();
         break;
 }

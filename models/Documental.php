@@ -9,10 +9,10 @@ class Documental extends Serie {
 
     public function getTipoClase(){
         return 'Documental';
-    };
+    }
 
     public function setNarrador($narrador){
-        $this->narrador = $narr;
+        $this->narrador = $narrador;
     }
 
     public function getNarrador(){

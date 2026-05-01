@@ -37,18 +37,26 @@ class GestorPDO {
         $stmt = $this->db->query($sql);
 
         while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $s = null;
             if ($fila['tipo_clase'] === 'Drama') {
-                $series[] = new Drama($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['calificacion_edad'], $fila['id']);
+                $s = new Drama($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['calificacion_edad'], $fila['id']);
             } elseif ($fila['tipo_clase'] === 'Documental') {
-                $series[] = new Documental($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['narrador'], $fila['id']);
+                $s = new Documental($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['narrador'], $fila['id']);
             } else {
-                $series[] = new Animada($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['estilo_animacion'], $fila['id']);
+                $s = new Animada($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['estilo_animacion'], $fila['id']);
             }
+            if ($s !== null) {
+                $s->setNota($fila['nota']); 
+                $series[] = $s;
+            }
+
         }
+    
         return $series;
     }
 
     public function buscar($id) {
+        $serie = null;
         $sql = "SELECT * FROM series where id = :id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id', $id);
@@ -85,9 +93,9 @@ class GestorPDO {
         $stmt->bindValue(':genero', $s->getGenero());
         $stmt->bindValue(':tipo', $s->getTipoClase());
 
-        $stmt->bindValue(':calificacion_edad', ($s instanceof Drama) ? $s->getCalificacionEdad() : null);
+        $stmt->bindValue(':calificacion_edad', ($s instanceof Drama) ? $s->getCalificacion() : null);
         $stmt->bindValue(':narrador', ($s instanceof Documental) ? $s->getNarrador() : null);
-        $stmt->bindValue(':estilo_animacion', ($s instanceof Animada) ? $s->getEstiloAnimacion() : null);
+        $stmt->bindValue(':estilo_animacion', ($s instanceof Animada) ? $s->getEstilo() : null);
 
         $stmt->execute();
     }
@@ -111,10 +119,18 @@ class GestorPDO {
         $stmt->bindValue(':genero', $s->getGenero());
         $stmt->bindValue(':tipo', $s->getTipoClase());
 
-        $stmt->bindValue(':calificacion_edad', ($s instanceof Drama) ? $s->getCalificacionEdad() : null);
+        $stmt->bindValue(':calificacion_edad', ($s instanceof Drama) ? $s->getCalificacion() : null);
         $stmt->bindValue(':narrador', ($s instanceof Documental) ? $s->getNarrador() : null);
-        $stmt->bindValue(':estilo_animacion', ($s instanceof Animada) ? $s->getEstiloAnimacion() : null);
+        $stmt->bindValue(':estilo_animacion', ($s instanceof Animada) ? $s->getEstilo() : null);
 
+        $stmt->execute();
+    }
+
+    public function actualizarNota($id, $nota) {
+        $sql = "UPDATE series SET nota = :nota WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':nota', $nota);
+        $stmt->bindValue(':id', $id);
         $stmt->execute();
     }
 }

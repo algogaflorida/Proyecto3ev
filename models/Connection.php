@@ -1,6 +1,6 @@
 <?php
 class Connection {
-    private static $instancia = null;
+    private static $instance = null;
     protected $conn;
     private $config = "conf.json";
 
@@ -15,7 +15,7 @@ class Connection {
             }
             $configData = file_get_contents($this->config);
             $c = json_decode($configData, true);
-            $dsn = "mysql:host=" . $c['host'] . ";dbname=" . $c['dbname'];
+            $dsn = "mysql:host=" . $c['host'] . ";dbname=" . $c['db'];
             $this->conn = new PDO($dsn, $c['userName'], $c['password']); 
         } catch (PDOException $e) {
             echo "Error de conexión: " . $e->getMessage() . "<br>";
@@ -24,9 +24,9 @@ class Connection {
             echo "Error: " . $e->getMessage() . "<br>";
         }
     }
-    public function getInstance(){
+    public static function getInstance(){
         if (self::$instance === null){
-            self::$instance == new self();
+            self::$instance = new self();
         }
         return self::$instance;
     }

@@ -4,12 +4,14 @@ abstract class Serie {
     protected $estreno;
     protected $titulo;
     protected $genero;
+    protected $nota;
 
-    public function __construct($est, $tit, $gen, $id = 0){
+    public function __construct($est, $tit, $gen, $id = 0) { 
         $this->estreno = $est;
         $this->titulo = $tit;
         $this->genero = $gen;
         $this->id = $id;
+        $this->nota = 0; 
     }
 
     abstract public function getTipoClase();
@@ -25,6 +27,10 @@ abstract class Serie {
         $this->titulo = $tit;
     }
     
+    public function setNota($nota){
+        $this->nota = $nota;
+    }
+
     public function getEstreno(){
         return $this->estreno;
     }
@@ -35,6 +41,10 @@ abstract class Serie {
 
     public function getTitulo(){
         return $this->titulo;
+    }
+
+    public function getNota(){
+        return $this->nota;
     }
 
     public function getId(){
