@@ -1,70 +1,120 @@
 <?php
-class GestorPDO{
+class GestorPDO {
     private $db;
 
     public function __construct() {
         $this->db = Connection::getInstance()->getConnection();
     }
 
-    public function buscarUsuarioPorEmail($email){
-        $sql = "SELECT * FROM usuario where email = :email";
+    public function buscarUsuarioPorEmail($email) {
+        $sql = "SELECT * FROM usuario WHERE email = :email";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':email' => $email]);
-        $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
         
-        if ($datos){
-            return new Usuario ($datos['email'], $datos['pwd'], $datos['id']);
-        } else {
-            return null;
+        $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($datos) {
+            return new Usuario($datos['email'], $datos['pwd'], $datos['id']);
         }
+        return null;
     }
 
-    public function registrarUsuario(Usuario $u){
+    public function registrarUsuario(Usuario $u) {
         try {
             $sql = "INSERT INTO usuario (email, pwd) VALUES (:email, :pwd)";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute([':email' = $u->getEmail(), 'pwd' = $u->getPassword()]);
+            $stmt->bindValue(':email', $u->getEmail(), PDO::PARAM_STR);
+            $stmt->bindValue(':pwd', $u->getPassword(), PDO::PARAM_STR);
+            return $stmt->execute();
         } catch (PDOException $e) {
             return false;
         }
     }
 
-    public function listar(){
+    public function listar() {
         $series = [];
-
         $sql = "SELECT * FROM series";
         $stmt = $this->db->query($sql);
 
-        while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)){
-            if ($fila['tipo_clase'] === 'Drama'){
-                $series[] = new Drama ($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['calificacion_edad'], $fila['id']);
+        while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if ($fila['tipo_clase'] === 'Drama') {
+                $series[] = new Drama($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['calificacion_edad'], $fila['id']);
             } elseif ($fila['tipo_clase'] === 'Documental') {
-                $series[] = new Documental ($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['narrador'], $fila['id']);
+                $series[] = new Documental($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['narrador'], $fila['id']);
             } else {
-                $series[] = new Animada ($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['estilo_animacion'], $fila['id']);
+                $series[] = new Animada($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['estilo_animacion'], $fila['id']);
             }
         }
         return $series;
     }
 
-    public function eliminar($id){
-        $sql = "DELETE FROM series WHERE id = :id";
+    public function buscar($id) {
+        $sql = "SELECT * FROM series where id = :id";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $id]);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
 
-        header('Location: index.php?accion=listar');
-        exit;
+        while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if ($fila['tipo_clase'] === 'Drama') {
+                $serie = new Drama($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['calificacion_edad'], $fila['id']);
+            } elseif ($fila['tipo_clase'] === 'Documental') {
+                $serie = new Documental($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['narrador'], $fila['id']);
+            } else {
+                $serie = new Animada($fila['estreno'], $fila['titulo'], $fila['genero'], $fila['estilo_animacion'], $fila['id']);
+            }
+        }
+        return $serie;
     }
 
-    public function crear(Serie $s){
-        $sql = "INSERT INTO serie (estreno, titulo, genero, calificacion_edad, narrador, estilo_animacion) VALUES (:estreno, :titulo, :genero, :calificacion_edad, :narrador, :estilo_animacion)";
+    public function eliminar($id) {
+        $sql = "DELETE FROM series WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        $params = [ ':titulo'  => $s->getTitulo(), ':estreno' => $s->getEstreno(), ':genero'  => $s->getGenero(), ':tipo' => $s->getTipoClase(), ':calificacion_edad' => null, 
-        ':estilo_animacion' => null, ':narrador'=> null ];
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
 
-    // Rellenamos solo lo que toque según el tipo de objeto
-    if ($s instanceof Drama) $params['calificacion_edad'] = $s->getCalificacionEdad();
-    if ($s instanceof Animada) $params['estilo_animacion'] = $s->getEstiloAnimacion();
-    if ($s instanceof Documental) $params['narrador'] = $s->getNarrador();
+        }
+
+    public function crear(Serie $s) {
+        $sql = "INSERT INTO series (estreno, titulo, genero, tipo_clase, calificacion_edad, narrador, estilo_animacion) 
+                VALUES (:estreno, :titulo, :genero, :tipo, :calificacion_edad, :narrador, :estilo_animacion)";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        $stmt->bindValue(':estreno', $s->getEstreno());
+        $stmt->bindValue(':titulo', $s->getTitulo());
+        $stmt->bindValue(':genero', $s->getGenero());
+        $stmt->bindValue(':tipo', $s->getTipoClase());
+
+        $stmt->bindValue(':calificacion_edad', ($s instanceof Drama) ? $s->getCalificacionEdad() : null);
+        $stmt->bindValue(':narrador', ($s instanceof Documental) ? $s->getNarrador() : null);
+        $stmt->bindValue(':estilo_animacion', ($s instanceof Animada) ? $s->getEstiloAnimacion() : null);
+
+        $stmt->execute();
+    }
+
+    public function editar(Serie $s) {
+        $sql = "UPDATE series SET 
+                    estreno = :estreno, 
+                    titulo = :titulo, 
+                    genero = :genero, 
+                    tipo_clase = :tipo, 
+                    calificacion_edad = :calificacion_edad, 
+                    narrador = :narrador, 
+                    estilo_animacion = :estilo_animacion 
+                WHERE id = :id";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        $stmt->bindValue(':id', $s->getId());
+        $stmt->bindValue(':estreno', $s->getEstreno());
+        $stmt->bindValue(':titulo', $s->getTitulo());
+        $stmt->bindValue(':genero', $s->getGenero());
+        $stmt->bindValue(':tipo', $s->getTipoClase());
+
+        $stmt->bindValue(':calificacion_edad', ($s instanceof Drama) ? $s->getCalificacionEdad() : null);
+        $stmt->bindValue(':narrador', ($s instanceof Documental) ? $s->getNarrador() : null);
+        $stmt->bindValue(':estilo_animacion', ($s instanceof Animada) ? $s->getEstiloAnimacion() : null);
+
+        $stmt->execute();
     }
 }

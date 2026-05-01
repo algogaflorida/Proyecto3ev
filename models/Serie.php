@@ -5,7 +5,7 @@ abstract class Serie {
     protected $titulo;
     protected $genero;
 
-    public function __construct($est, $tipo, $tit, $gen, $id = 0){
+    public function __construct($est, $tit, $gen, $id = 0){
         $this->estreno = $est;
         $this->titulo = $tit;
         $this->genero = $gen;
@@ -15,10 +15,6 @@ abstract class Serie {
     abstract public function getTipoClase();
     public function setEstreno($est){
         $this->estreno = $est;
-    }
-
-    public function setTipoClase($tc){
-        $this->tipo_clase = $tc;
     }
 
     public function setGenero($gen){
@@ -31,10 +27,6 @@ abstract class Serie {
     
     public function getEstreno(){
         return $this->estreno;
-    }
-
-    public function getTipoClase(){
-        return $this->tipo_clase;
     }
 
     public function getGenero(){
