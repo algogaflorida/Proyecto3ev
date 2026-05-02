@@ -9,6 +9,27 @@
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-nuevo { background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+
+        .header-tabla {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-crear {
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-crear:hover {
+            background-color: #218838;
+        }
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
@@ -77,6 +98,11 @@
         <?php endif; ?>
     </div>
     </nav>
+
+    <div class="header-tabla">
+        <h2>Listado de Series</h2>
+        <a href="index.php?accion=crear" class="btn-crear">+ Añadir Nueva Serie</a>
+    </div>
 
     <table>
         <thead>
